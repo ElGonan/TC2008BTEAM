@@ -101,7 +101,6 @@ def a_star_search(graph, start, goal):
     path.append(start)
     path.reverse()
     
-    print(path)
     return path
 
 class Robot(Agent):
