@@ -63,8 +63,7 @@ class Robot(Agent):
         self.memoria[inicio] = 'S'
         self.basura_no_recogida = None
         self.destinos_pendientes = [0]
-        self.mapaREAL = mapaREAL
-        self.mapaUNKNOWN = mapaUNKNOWN
+
 
     def step(self):
         self.mapeo()
@@ -80,16 +79,16 @@ class Robot(Agent):
             print("Exploro detalles VAMOOOS")
             self.explorar_detalle()
 
-        self.memoria[self.posicion] = self.mapaREAL[self.posicion[0]][self.posicion[1]] 
+        self.memoria[self.posicion] = self.model.mapaREAL[self.posicion[0]][self.posicion[1]] 
 
         # Actualizar mapaUNKNOWN con información del mapaREAL
-        self.mapaUNKNOWN[self.posicion[0]][self.posicion[1]] = self.mapaREAL[self.posicion[0]][self.posicion[1]]
+        self.model.mapaUNKNOWN[self.posicion[0]][self.posicion[1]] = self.model.mapaREAL[self.posicion[0]][self.posicion[1]]
 
         # Actualizar memoria con información del entorno
         vecinos = self.model.grid.get_neighborhood(self.posicion, moore=True, include_center=True)
         for vecino in vecinos:
         #    print(f"Analizando vecino: {vecino}")
-            contenido = self.model.mapa[vecino[1]][vecino[0]]  # Corrección aquí
+            contenido = self.model.mapaUNKNOWN[vecino[1]][vecino[0]]  # Corrección aquí
         #    print(f"Contenido: {contenido}")
             if contenido == 'X':
                 self.memoria[vecino] = 'X'
@@ -171,13 +170,11 @@ class LimpiezaModel(Model):
             agent_reporters={"Posicion": "posicion"})
         self.num_robots = 1
         self.schedule = RandomActivation(self)
-        self.mapa, self.mapaREAL = leer_mapa(mapa_txt)
-        self.mapaUNKNOWN = [fila[:] for fila in self.mapa]  # Copia del mapa desconocido
-        self.grid = SingleGrid(len(self.mapa), len(self.mapa[0]), torus=False)
+        self.mapaUNKNOWN, self.mapaREAL = leer_mapa(mapa_txt)
+        self.grid = SingleGrid(len(self.mapaUNKNOWN), len(self.mapaUNKNOWN[0]), torus=False)
         self.bote_basura = ()
         self.basura = ()
         self.obstaculo = ()
-        self.mapa, self.mapaREAL = leer_mapa(mapa_txt)
         self.memoria_mapa = {}
         self.todas_celdas_mapeadas = 1
 
@@ -193,6 +190,9 @@ class LimpiezaModel(Model):
     def step(self):
         print("Paso")   
         self.schedule.step()
+        print("MapaUNKNOWN:")
+        for fila in self.model.mapaUNKNOWN:
+            print(' '.join(fila))
         
 model = LimpiezaModel(mapa_file)
 
