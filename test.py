@@ -67,8 +67,6 @@ class Robot(Agent):
         self.moverse()
         print("Ahora estoy en la posición:")
         print(self.posicion)
-        print("Mi memoria es:")
-        print(self.model.memoria)
 
     def mapeo(self):
         print("Estoy mapeando chucuchú")
@@ -78,7 +76,7 @@ class Robot(Agent):
 
         self.model.memoria[self.posicion] = self.model.mapaREAL[self.posicion[0]][self.posicion[1]] 
 
-        # Actualizar mapaUNKNOWN con información del mapaREAL
+        # Actualizar mapa con información del mapaREAL
         self.model.mapa[self.posicion[0]][self.posicion[1]] = self.model.mapaREAL[self.posicion[0]][self.posicion[1]]
 
         # Actualizar memoria con información del entorno
@@ -89,7 +87,7 @@ class Robot(Agent):
             print(f"Contenido: {contenido}")
             if contenido == 'X':
                 self.model.memoria[vecino] = 'X'
-            if contenido.isdigit():
+            if contenido.isdigit() and contenido != '0':
                 self.model.memoria[vecino] = 'B'
             elif contenido == '0':
                 self.model.memoria[vecino] = '0'
@@ -101,10 +99,7 @@ class Robot(Agent):
     def explorar_detalle(self):
         contenido = self.model.mapa[self.posicion[0]][self.posicion[1]]
     
-        if contenido == 'X':
-            print("Se reveló que hay un obstáculo en esta celda.")
-            self.model.memoria[self.posicion] = 'X'
-        elif contenido.isdigit():
+        if contenido.isdigit():
             print(f"Se reveló que hay {contenido} de basura en esta celda.")
             valor_basura = int(contenido)
             self.model.memoria[self.posicion] = valor_basura
@@ -113,6 +108,8 @@ class Robot(Agent):
             print(self.model.memoria)
         else:
             print("No se reveló nada nuevo en esta celda.")
+        
+        
                 
     
     def obtener_vecinos_conocidos(self):
@@ -188,9 +185,11 @@ class LimpiezaModel(Model):
     def step(self):
         print("Paso")   
         self.schedule.step()
+        print("La memoria que se tiene es:")
+        print(self.memoria)
     
 model = LimpiezaModel('mapa.txt')
 
-steps = 2
+steps = 4
 for i in range(steps): 
     model.step()
