@@ -89,7 +89,7 @@ class Robot(Agent):
             print(f"Contenido: {contenido}")
             if contenido == 'X':
                 self.model.memoria[vecino] = 'X'
-            if contenido.isdigit():
+            if contenido.isdigit() and contenido != '0':
                 self.model.memoria[vecino] = 'B'
             elif contenido == '0':
                 self.model.memoria[vecino] = '0'
@@ -113,6 +113,7 @@ class Robot(Agent):
             print(self.model.memoria)
         else:
             print("No se reveló nada nuevo en esta celda.")
+        
                 
     
     def obtener_vecinos_conocidos(self):
@@ -135,16 +136,12 @@ class Robot(Agent):
         
         
     def planificar_ruta(self, destino):
-        cola = [(self.posicion, [])]  # Cola para el BFS
-        print("Imprimo la cola")
-        print(cola)
+        pila = [(self.posicion, [])]  # Pila para el DFS
         visitados = set()
 
-        while cola != []:
-            celda_actual, ruta_actual = cola.pop(0)
+        while pila:
+            celda_actual, ruta_actual = pila.pop()
             if celda_actual == destino:
-                print("Imprimo la ruta_actual")
-                print(ruta_actual)
                 return ruta_actual
 
             if celda_actual in visitados:
@@ -154,10 +151,19 @@ class Robot(Agent):
             vecinos_conocidos = self.obtener_vecinos_conocidos()
             vecinos_libres = [vecino for vecino in vecinos_conocidos if self.model.memoria[vecino] != 'X']
 
-            for vecino in vecinos_libres:
-                cola.append((vecino, ruta_actual + [vecino]))
+            if not vecinos_libres:  # Si no hay vecinos libres, retrocede
+                if ruta_actual:
+                    retroceder = ruta_actual[-1]  # Retrocede al último punto
+                    pila.append((retroceder, ruta_actual[:-1]))  # Elimina el último paso de la ruta
+            else:
+                siguiente_celda = vecinos_libres[0]
+                pila.append((siguiente_celda, ruta_actual + [siguiente_celda]))
                 
-        return ruta_actual
+        print("Vecinos libres:")
+        print(vecinos_libres)
+        vecinos_libres.pop(0)
+
+        return vecinos_libres
     
 # Se importa el modelo
 
@@ -191,6 +197,6 @@ class LimpiezaModel(Model):
     
 model = LimpiezaModel('mapa.txt')
 
-steps = 2
+steps = 3
 for i in range(steps): 
     model.step()
