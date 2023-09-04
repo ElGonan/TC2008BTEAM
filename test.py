@@ -109,6 +109,7 @@ class Robot(Agent):
         else:
             print("No se reveló nada nuevo en esta celda.")
         
+        
                 
     
     def obtener_vecinos_conocidos(self):
@@ -131,12 +132,16 @@ class Robot(Agent):
         
         
     def planificar_ruta(self, destino):
-        pila = [(self.posicion, [])]  # Pila para el DFS
+        cola = [(self.posicion, [])]  # Cola para el BFS
+        print("Imprimo la cola")
+        print(cola)
         visitados = set()
 
-        while pila:
-            celda_actual, ruta_actual = pila.pop()
+        while cola != []:
+            celda_actual, ruta_actual = cola.pop(0)
             if celda_actual == destino:
+                print("Imprimo la ruta_actual")
+                print(ruta_actual)
                 return ruta_actual
 
             if celda_actual in visitados:
@@ -146,19 +151,10 @@ class Robot(Agent):
             vecinos_conocidos = self.obtener_vecinos_conocidos()
             vecinos_libres = [vecino for vecino in vecinos_conocidos if self.model.memoria[vecino] != 'X']
 
-            if not vecinos_libres:  # Si no hay vecinos libres, retrocede
-                if ruta_actual:
-                    retroceder = ruta_actual[-1]  # Retrocede al último punto
-                    pila.append((retroceder, ruta_actual[:-1]))  # Elimina el último paso de la ruta
-            else:
-                siguiente_celda = vecinos_libres[0]
-                pila.append((siguiente_celda, ruta_actual + [siguiente_celda]))
+            for vecino in vecinos_libres:
+                cola.append((vecino, ruta_actual + [vecino]))
                 
-        print("Vecinos libres:")
-        print(vecinos_libres)
-        vecinos_libres.pop(0)
-
-        return vecinos_libres
+        return ruta_actual
     
 # Se importa el modelo
 
@@ -194,6 +190,11 @@ class LimpiezaModel(Model):
     
 model = LimpiezaModel('mapa.txt')
 
-steps = 4
+steps = 2
 for i in range(steps): 
     model.step()
+
+# Se imprime el mapa final
+print("Mapa final:")
+for fila in model.mapa:
+    print(' '.join(fila))
