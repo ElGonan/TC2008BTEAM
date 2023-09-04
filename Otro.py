@@ -12,10 +12,14 @@ import matplotlib.pyplot as plt
 
 # Función para leer el mapa desde un archivo de texto.
 def leer_mapa(filename):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        mapa = [list(line.replace(" ", "").strip()) for line in lines[1:]]
-    return mapa
+    try:
+        with open(filename, 'r') as f:
+            lines = f.readlines()
+            mapa = [list(line.replace(" ", "").strip()) for line in lines[1:]]
+        return mapa
+    except FileNotFoundError:
+        print(f"Archivo {filename} no encontrado.")
+        return None
 
 def construir_grafo(mapa):
     grafo = {}
@@ -51,34 +55,6 @@ def construir_grafo(mapa):
     nx.draw(G, pos, with_labels=True, node_size=1000, font_size=10, node_color='lightblue', font_color='black')
 
     # Muestra el dibujo del grafo
-    plt.show()
-
-    return grafo
-
-
-def leer_mapa(filename):
-    with open(filename, 'r') as f:
-        lines = f.readlines()
-        mapa = [list(line.replace(" ", "").strip()) for line in lines[1:]]
-    return mapa
-
-def construir_grafo(mapa):
-    grafo = {}
-    filas = len(mapa)
-    columnas = len(mapa[0])
-
-    for i in range(filas):
-        for j in range(columnas):
-            if mapa[i][j] != 'X':
-                nodo = (i, j)
-                vecinos = []
-
-                if i - 1 >= 0 and mapa[i-1][j] != 'X': vecinos.append((i-1, j))
-                if i + 1 < filas and mapa[i+1][j] != 'X': vecinos.append((i+1, j))
-                if j - 1 >= 0 and mapa[i][j-1] != 'X': vecinos.append((i, j-1))
-                if j + 1 < columnas and mapa[i][j+1] != 'X': vecinos.append((i, j+1))
-
-                grafo[nodo] = vecinos
 
     return grafo
 
