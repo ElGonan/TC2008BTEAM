@@ -259,7 +259,10 @@ class Robot(Agent):
                 elif self.posicion != self.model.Inicio:
                     camino_corto = a_star_search(self.model.grafo, self.posicion, self.model.Inicio)
                     self.mover(camino_corto[1])
-        
+            
+        datos = {'id': self.unique_id, 'posicion': self.posicion}
+        return datos
+
 def update(num, model):
     model.step()
 
@@ -286,6 +289,7 @@ class LimpiezaModel(Model):
         for i in range(self.num_robots):
             robot = Robot(i, self, self.Inicio)
             self.schedule.add(robot)
+            
 
     def draw_map(self):
         self.ax.clear()
@@ -299,11 +303,11 @@ class LimpiezaModel(Model):
                     self.ax.text(j, i, cell, ha='center', va='center', fontsize=60, color='blue')
         for agent in self.schedule.agents:
             self.ax.text(agent.posicion[1], agent.posicion[0], 'R'+ str(agent.unique_id), ha='center', va='center', fontsize=40, color='red')
-            
+    
     def step(self):
         self.schedule.step()
         self.draw_map()
-        
+
 model = LimpiezaModel('mapa.txt') 
 
 ani = animation.FuncAnimation(model.fig, update, fargs=(model,), frames=50)
@@ -337,9 +341,14 @@ class Server(BaseHTTPRequestHandler):
         # ... (Control de la simulación con base en el JSON recibido) ...
 
         # Genera una respuesta con los resultados de la simulación (esto es solo un ejemplo, ajusta según tus necesidades).
+        
+        # Ahora necesito que el response.data mande el valor de datos del Robot
+        
+        
+
+        
         response_data = {
-            "message": "Simulación completada",
-            "result": "Los resultados de la simulación aquí..."
+            self.wfile.write(str(Robot.step().datos).encode('utf-8'))
         }
 
         self._set_response()

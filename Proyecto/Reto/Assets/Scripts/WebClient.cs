@@ -40,70 +40,23 @@ public class WebClient : MonoBehaviour
                 }
                 else
                 {
-                    string input = www.downloadHandler.text;
 
-                    // Remueve los corchetes externos y divide las filas
-                    string[] rows = input.Trim('[', ']').Split(new[] { "], [" }, StringSplitOptions.None);
+                    
+                    string result = www.downloadHandler.text; // Get the result
+                    Debug.Log(result);
+//                    char id_robot = result[0];
+//                    char x_position = result[2];
+//                   char y_position = result[4];
+                    inputString = result;
+                    finished = true;
+                    // Debug.Log("Finished");
 
-                    // Inicializa la matriz con el número de filas y columnas adecuado
-                    int rowCount = rows.Length;
-                    int colCount = rows[0].Split(',').Length;
-                    int[,] matriz = new int[rowCount, colCount];
-
-                    // Recorre las filas y elementos para llenar la matriz
-                    for (int i = 0; i < rowCount; i++)
-                    {
-                        string[] elements = rows[i].Split(',');
-                        for (int j = 0; j < colCount; j++)
-                        {
-                            matriz[i, j] = int.Parse(elements[j]);
-                        }
-                    }
-
-
-                    // Imprime la matriz
-                    for (int i = 0; i < rowCount; i++)
-                    {
-                        for (int j = 0; j < colCount; j++)
-                        {
-                            Vector3 position = new Vector3(i * spacing, 1, j * spacing);
-                            if (matriz[i,j] == 1)
-                            {
-                                Vector3 positionTrash = new Vector3(i * spacing, 1, j * spacing) + new Vector3(0, 0f, 0f);
-                                Instantiate(robotCleaners, positionTrash, Quaternion.identity);
-                                Instantiate(floorPrefab, position, Quaternion.identity);
-                            }
-                            if (matriz[i,j] == 3)
-                            {
-                                Vector3 positionObstacle = new Vector3(i * spacing, 1, j * spacing) + new Vector3(0, 5f, 0f);
-                                Instantiate(obstaclePrefab, position, Quaternion.identity);
-                            }
-
-                            else if (matriz[i,j] == 4)
-                            {
-                                Vector3 positionPapelera = new Vector3(i * spacing, 1, j * spacing) + new Vector3(0, 0.3f, 0);
-                                Instantiate(Papelera, positionPapelera, Quaternion.identity);
-                                Instantiate(floorPrefab, position, Quaternion.identity);
-                            }
-                            else if (matriz[i,j] == 2)
-                            {
-                                Vector3 positionTrash = new Vector3(i * spacing, 1, j * spacing) + new Vector3(0, 0.8f, 0f);
-                                Instantiate(Trash, positionTrash, Quaternion.identity);
-                                Instantiate(floorPrefab, position, Quaternion.identity);
-                            }
-                            else
-                            {
-                                Instantiate(floorPrefab, position, Quaternion.identity);
-                            }
-                        }
-                    }
-                }
-            }
             yield return WaitForThreeSeconds();
 
         }
     }
-
+}
+}
     // Start is called before the first frame update
     void Start()
     {
