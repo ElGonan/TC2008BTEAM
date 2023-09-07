@@ -9,17 +9,7 @@ public class WebClient : MonoBehaviour
     private string json; // Debes definir la variable json fuera de los métodos.
     public bool finished = false;
     public string inputString;
-
-    public GameObject floorPrefab; // The prefab for the floor
-    public GameObject obstaclePrefab; // The prefab for obstacles
-    public GameObject robot0;
-    public GameObject robot1;
-    public GameObject robot2;
-    public GameObject robot3;
-    public GameObject robot4;
-    public GameObject Trash;
-    public GameObject Papelera;
-    public GameObject StartPoint;
+    
     public float spacing = 1.0f; // Spacing between objects
 
 

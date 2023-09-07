@@ -325,10 +325,13 @@ class Robot(Agent):
                             break
                 
 
+
     def datos(self):
         datos = str(self.unique_id) + str(self.posicion)
+        datos_basura = str(traducir_mapa(self.model.mapaUNKNOWN))
+        print(datos_basura)
         print(datos)
-        return datos
+        return datos_basura
     
 
 def update(num, model):
@@ -358,6 +361,7 @@ class LimpiezaModel(Model):
          # Desactivar los ejes
         self.ax.axis('off')
         self.datos = []
+        self.datos_basura = []
 
         # Creación de robots
         for i in range(self.num_robots):
@@ -397,6 +401,7 @@ class LimpiezaModel(Model):
 
 model = LimpiezaModel('mapa.txt') 
 
+
 # ani = animation.FuncAnimation(model.fig, update, fargs=(model,), frames=50)
 # ani.save('animation.gif', writer='imagemagick', fps=1)
 # html = HTML(ani.to_jshtml())
@@ -426,10 +431,35 @@ class Server(BaseHTTPRequestHandler):
 
         self._set_response()
         self.wfile.write(str(response_data).encode('utf-8'))
+
+
+class Server2(BaseHTTPRequestHandler):
+
+    # ... (Código del servidor Python, como en tu ejemplo original) ...
+    def _set_response(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/html')
+        self.end_headers()
+        
+    def do_GET(self):
+        self._set_response()
+        self.wfile.write("GET request for {}".format(self.path).encode('utf-8'))
         
 
+    def do_POST(self):
+        model.step()
+        content_length = int(self.headers['Content-Length'])
+        post_data = self.rfile.read(content_length).decode('utf-8')        
+        
+        response_data = model.datos_basura
+        
 
-def run(server_class=HTTPServer, handler_class=Server, port=8585):
+        self._set_response()
+        self.wfile.write(str(response_data).encode('utf-8'))
+
+
+
+def run(server_class=HTTPServer, handler_class=Server, port=8586):
     logging.basicConfig(level=logging.INFO)
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
